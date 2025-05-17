@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kayıt Ol</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
+      color: #004d40;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 320px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #00796b;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #b2dfdb;
+      border-radius: 6px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #00acc1;
+      box-shadow: 0 0 5px #00acc1;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #00bcd4;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0097a7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Kayıt Formu</h2>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Ad" required><br>
+      <input type="text" id="surname" placeholder="Soyad" required><br>
+      <input type="email" id="email" placeholder="Email" required><br>
+      <input type="password" id="password" placeholder="Şifre" required><br>
+      <button type="submit">Kayıt Ol</button>
+    </form>
+    <p style="margin-top: 15px;">
+      <a href="anasayfa.html" style="color: #00bcd4; text-decoration: none;">Ana Sayfaya Dön</a>
+    </p>
+  </div>
+
+  <script type="module">
+    import { postPersonWithoutAuth } from './Servicess/personservicess.js';
+
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const person = {
+        name: document.getElementById("name").value,
+        surname: document.getElementById("surname").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+      };
+
+      try {
+        const result = await postPersonWithoutAuth(person);
+        alert("Kayıt başarılı: " + JSON.stringify(result));
+      } catch (err) {
+        console.error("HATA:", err);
+        alert("Kayıt başarısız: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

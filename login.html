@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giriş Yap - Bilet Al</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #e0f7fa, #b2ebf2, #ffffff);
+      color: #004d40;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    nav {
+      background-color: #b2ebf2;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo a {
+      text-decoration: none;
+      color: #004d40;
+      font-weight: bold;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #006064;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #00838f;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #b2ebf2;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #00acc1;
+      box-shadow: 0 0 5px rgba(0, 172, 193, 0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #006064;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+
+    .text-center {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .text-center a {
+      color: #00838f;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: auto;
+      background-color: #b2ebf2;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    footer a {
+      color: #004d40;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="logo">
+      <a href="anasayfa.html"><strong>Bilet Al</strong></a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="login-box">
+      <h1>Giriş Yap</h1>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">E-posta veya Kullanıcı Adı</label>
+          <input type="text" id="username" name="username" required placeholder="E-posta adresinizi girin" />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Şifre</label>
+          <input type="password" id="password" name="password" required placeholder="Şifrenizi girin" />
+        </div>
+
+        <button type="submit">Giriş Yap</button>
+      </form>
+
+      <div class="text-center">
+        <p>Hesabınız yok mu? <a href="register.html">Kaydol</a></p>
+        <p><a href="anasayfa.html">Ana sayfaya dön</a></p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="hakkimizda.html">Hakkımızda</a>
+      <a href="gizlilik.html">Gizlilik Politikası</a>
+      <a href="iletisim.html">İletişim</a>
+    </div>
+  </footer>
+
+  <script type="module">
+    async function login(credentials) {
+      try {
+        const url = "http://localhost:5000/api/persons/byEmail?email=" + encodeURIComponent(credentials.username);
+        const response = await fetch(url);
+        const person = await response.json();
+
+        if (!person) {
+          throw new Error("Kullanıcı bulunamadı.");
+        }
+
+        // Şifre kontrolü
+        if (person.password !== credentials.password) {
+          throw new Error("Şifre hatalı.");
+        }
+
+        // Başarılı giriş
+        return {
+          token: "person_" + person.p_id, // Basit token
+          username: person.name + " " + person.surname,
+          userType: "user"
+        };
+      } catch (error) {
+        throw new Error(error.message || "Giriş başarısız.");
+      }
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const result = await login({ username, password });
+
+        if (result.token) {
+          localStorage.setItem("token", result.token);
+          localStorage.setItem("username", result.username);
+          localStorage.setItem("userType", result.userType);
+
+          alert("Giriş başarılı!");
+          window.location.href = "anasayfa.html";
+        } else {
+          throw new Error("Token alınamadı");
+        }
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    });
+  </script>
+</body>
+
+</html>

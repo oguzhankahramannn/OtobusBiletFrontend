@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Bilet Al</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 250px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+      padding: 20px 0;
+      text-align: center;
+      border-bottom: 2px solid #e0f7fa;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-header h2 {
+      color: #00838f;
+      font-size: 1.5rem;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 10px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: #006064;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: #e0f7fa;
+      color: #00838f;
+    }
+
+    .nav-link i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      color: #00838f;
+      font-size: 1.8rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info span {
+      color: #006064;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      padding: 8px 15px;
+      background: #00838f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #006064;
+    }
+
+    /* Card Styles */
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0f7fa;
+    }
+
+    .card-title {
+      color: #00838f;
+      font-size: 1.2rem;
+    }
+
+    .add-btn {
+      padding: 8px 15px;
+      background: #00838f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+      background: #006064;
+      transform: translateY(-2px);
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0f7fa;
+    }
+
+    th {
+      background: #e0f7fa;
+      color: #00838f;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f5f5f5;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .edit-btn {
+      background: #00838f;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #e53935;
+      color: white;
+    }
+
+    .action-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #006064;
+      font-weight: 500;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #b2ebf2;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #00838f;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 131, 143, 0.1);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      .main-content {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>Admin Panel</h2>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="#seferler" class="nav-link active">
+            <i class="fas fa-route"></i> Sefer Yönetimi
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#otobusler" class="nav-link">
+            <i class="fas fa-bus"></i> Otobüs Yönetimi
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#firmalar" class="nav-link">
+            <i class="fas fa-building"></i> Firma Yönetimi
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1>Admin Kontrol Paneli</h1>
+        <div class="user-info">
+          <span id="adminName">Admin</span>
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Çıkış
+          </button>
+        </div>
+      </div>
+
+      <!-- Sefer Yönetimi -->
+      <div id="seferler" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Sefer Listesi</h3>
+            <button class="add-btn" onclick="openModal('sefer')">
+              <i class="fas fa-plus"></i> Yeni Sefer
+            </button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sefer ID</th>
+                  <th>Kalkış Noktası</th>
+                  <th>Varış Noktası</th>
+                  <th>Kalkış Zamanı</th>
+                  <th>Varış Zamanı</th>
+                  <th>Fiyat</th>
+                  <th>Otobüs Plakası</th>
+                  <th>Personel ID</th>
+                  <th>İşlemler</th>
+                </tr>
+              </thead>
+              <tbody id="seferListesi">
+                <!-- JavaScript ile doldurulacak -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Otobüs Yönetimi -->
+      <div id="otobusler" class="section" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Otobüs Listesi</h3>
+            <button class="add-btn" onclick="openModal('otobus')">
+              <i class="fas fa-plus"></i> Yeni Otobüs
+            </button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Plaka</th>
+                  <th>Model</th>
+                  <th>Koltuk Sayısı</th>
+                  <th>Firma</th>
+                  <th>İşlemler</th>
+                </tr>
+              </thead>
+              <tbody id="otobusListesi">
+                <!-- JavaScript ile doldurulacak -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Firma Yönetimi -->
+      <div id="firmalar" class="section" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Firma Listesi</h3>
+            <button class="add-btn" onclick="openModal('firma')">
+              <i class="fas fa-plus"></i> Yeni Firma
+            </button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Firma ID</th>
+                  <th>Firma Adı</th>
+                  <th>Telefon</th>
+                  <th>İşlemler</th>
+                </tr>
+              </thead>
+              <tbody id="firmaListesi">
+                <!-- JavaScript ile doldurulacak -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="seferModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Yeni Sefer Ekle</h3>
+        <button class="close-btn" onclick="closeModal('sefer')">&times;</button>
+      </div>
+      <form id="seferForm">
+        <div class="form-group">
+          <label for="startpoint">Kalkış Noktası</label>
+          <input type="text" id="startpoint" required>
+        </div>
+        <div class="form-group">
+          <label for="endpoint">Varış Noktası</label>
+          <input type="text" id="endpoint" required>
+        </div>
+        <div class="form-group">
+          <label for="starttime">Kalkış Zamanı</label>
+          <input type="datetime-local" id="starttime" required>
+        </div>
+        <div class="form-group">
+          <label for="endtime">Varış Zamanı</label>
+          <input type="datetime-local" id="endtime" required>
+        </div>
+        <div class="form-group">
+          <label for="price">Fiyat</label>
+          <input type="number" id="price" required>
+        </div>
+        <div class="form-group">
+          <label for="busplate">Otobüs Plakası</label>
+          <input type="text" id="busplate" required>
+        </div>
+        <div class="form-group">
+          <label for="personelid">Personel ID</label>
+          <input type="number" id="personelid" required>
+        </div>
+        <button type="submit" class="add-btn">Kaydet</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="otobusModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Yeni Otobüs Ekle</h3>
+        <button class="close-btn" onclick="closeModal('otobus')">&times;</button>
+      </div>
+      <form id="otobusForm">
+        <div class="form-group">
+          <label for="plaka">Plaka</label>
+          <input type="text" id="plaka" required>
+        </div>
+        <div class="form-group">
+          <label for="model">Model</label>
+          <input type="text" id="model" required>
+        </div>
+        <div class="form-group">
+          <label for="koltukSayisi">Koltuk Sayısı</label>
+          <input type="number" id="koltukSayisi" required>
+        </div>
+        <div class="form-group">
+          <label for="company_id">Firma ID</label>
+          <input type="number" id="company_id" required>
+        </div>
+        <button type="submit" class="add-btn">Kaydet</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="firmaModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Yeni Firma Ekle</h3>
+        <button class="close-btn" onclick="closeModal('firma')">&times;</button>
+      </div>
+      <form id="firmaForm">
+        <div class="form-group">
+          <label for="c_name">Firma Adı</label>
+          <input type="text" id="c_name" required>
+        </div>
+        <div class="form-group">
+          <label for="c_telno">Telefon</label>
+          <input type="tel" id="c_telno" required>
+        </div>
+        <button type="submit" class="add-btn">Kaydet</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Sayfa yüklendiğinde admin kontrolü
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      const userType = localStorage.getItem('userType');
+
+      if (!token || userType !== 'admin') {
+        window.location.href = 'admin-login.html';
+      }
+
+      // Admin adını göster
+      const adminName = localStorage.getItem('username');
+      document.getElementById('adminName').textContent = adminName || 'Admin';
+
+      // Menü işlemleri
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = document.querySelectorAll('.section');
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href').substring(1);
+
+          // Aktif menü öğesini güncelle
+          navLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+
+          // İlgili bölümü göster
+          sections.forEach(section => {
+            section.style.display = section.id === targetId ? 'block' : 'none';
+          });
+        });
+      });
+
+      // Sayfa yüklendiğinde listeleri yükle
+      loadSeferList();
+      loadFirmaList();
+      loadOtobusList();
+    });
+
+    // Modal işlemleri
+    function openModal(type) {
+      document.getElementById(`${type}Modal`).style.display = 'flex';
+      if (type === 'otobus') {
+        loadFirmaOptions();
+      }
+    }
+
+    function closeModal(type) {
+      document.getElementById(`${type}Modal`).style.display = 'none';
+    }
+
+    // Çıkış işlemi
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userType');
+      window.location.href = 'admin-login.html';
+    }
+
+    // Sefer listesini yükleme fonksiyonu
+    async function loadSeferList() {
+      try {
+        const response = await fetch("http://localhost:5000/Trip/getTrip");
+        if (!response.ok) throw new Error("Seferler getirilemedi");
+
+        const data = await response.json();
+        const tbody = document.getElementById("seferListesi");
+        tbody.innerHTML = "";
+
+        data.forEach(sefer => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${sefer.trip_id}</td>
+            <td>${sefer.startpoint}</td>
+            <td>${sefer.end_point}</td>
+            <td>${new Date(sefer.start_time).toLocaleString("tr-TR")}</td>
+            <td>${new Date(sefer.end_time).toLocaleString("tr-TR")}</td>
+            <td>${sefer.price} ₺</td>
+            <td>${sefer.b_plaka}</td>
+            <td>${sefer.p_id}</td>
+            <td>
+              <button onclick="editSefer(${sefer.trip_id})" class="action-btn edit-btn">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteSefer(${sefer.trip_id})" class="action-btn delete-btn">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        alert("Sefer listesi yüklenemedi: " + error.message);
+      }
+    }
+
+    // Sefer silme fonksiyonu
+    async function deleteSefer(tripId) {
+      if (!confirm('Bu seferi silmek istediğinizden emin misiniz?')) return;
+
+      try {
+        const response = await fetch(`http://localhost:5000/Trip/deleteTripbyId/${tripId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error("Sefer silinemedi");
+
+        alert("Sefer başarıyla silindi!");
+        loadSeferList(); // Listeyi yenile
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Sefer düzenleme fonksiyonu
+    async function editSefer(tripId) {
+      try {
+        const response = await fetch(`http://localhost:5000/Trip/getTripById/${tripId}`);
+        if (!response.ok) throw new Error("Sefer bilgileri getirilemedi");
+
+        const sefer = await response.json();
+
+        // Form alanlarını doldur
+        document.getElementById('startpoint').value = sefer.startpoint;
+        document.getElementById('endpoint').value = sefer.end_point;
+        document.getElementById('starttime').value = sefer.start_time.slice(0, 16); // datetime-local formatı için
+        document.getElementById('endtime').value = sefer.end_time.slice(0, 16);
+        document.getElementById('price').value = sefer.price;
+        document.getElementById('busplate').value = sefer.b_plaka;
+        document.getElementById('personelid').value = sefer.p_id;
+
+        // Form submit işlemini güncelle
+        const form = document.getElementById('seferForm');
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          await updateSefer(tripId);
+        };
+
+        // Modal'ı aç
+        openModal('sefer');
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Sefer güncelleme fonksiyonu
+    async function updateSefer(tripId) {
+      const data = {
+        startpoint: document.getElementById('startpoint').value,
+        end_point: document.getElementById('endpoint').value,
+        start_time: document.getElementById('starttime').value,
+        end_time: document.getElementById('endtime').value,
+        price: parseFloat(document.getElementById('price').value),
+        b_plaka: document.getElementById('busplate').value,
+        p_id: parseInt(document.getElementById('personelid').value)
+      };
+
+      try {
+        const response = await fetch(`http://localhost:5000/Trip/putTripById/${tripId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error("Sefer güncellenemedi");
+
+        alert("Sefer başarıyla güncellendi!");
+        closeModal('sefer');
+        loadSeferList(); // Listeyi yenile
+
+        // Form submit işlemini normal haline döndür
+        const form = document.getElementById('seferForm');
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          await addNewSefer();
+        };
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Yeni sefer ekleme fonksiyonu
+    async function addNewSefer() {
+      const data = {
+        startpoint: document.getElementById('startpoint').value,
+        end_point: document.getElementById('endpoint').value,
+        start_time: document.getElementById('starttime').value,
+        end_time: document.getElementById('endtime').value,
+        price: parseFloat(document.getElementById('price').value),
+        b_plaka: document.getElementById('busplate').value,
+        p_id: parseInt(document.getElementById('personelid').value)
+      };
+
+      try {
+        const response = await fetch("http://localhost:5000/Trip/postTrip", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error("Sefer eklenemedi");
+
+        alert("Sefer başarıyla eklendi!");
+        closeModal('sefer');
+        loadSeferList();
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Sefer form submit işlemi
+    document.getElementById('seferForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await addNewSefer();
+    });
+
+    // Firma seçeneklerini yükleme fonksiyonu
+    async function loadFirmaOptions() {
+      try {
+        const response = await fetch("http://localhost:5000/api/Company/getAllFirma");
+        if (!response.ok) throw new Error("Firmalar getirilemedi");
+
+        const firmalar = await response.json();
+        const firmaSelect = document.getElementById('firma');
+        firmaSelect.innerHTML = '<option value="">Firma Seçiniz</option>';
+
+        firmalar.forEach(firma => {
+          const option = document.createElement('option');
+          option.value = firma.company_id;
+          option.textContent = firma.c_name;
+          firmaSelect.appendChild(option);
+        });
+      } catch (error) {
+        alert("Firma listesi yüklenemedi: " + error.message);
+      }
+    }
+
+    // Otobüs ekleme fonksiyonu
+    async function addNewOtobus() {
+      const data = {
+        b_plaka: document.getElementById('plaka').value.trim(),
+        model: document.getElementById('model').value.trim(),
+        seat_capacity: parseInt(document.getElementById('koltukSayisi').value),
+        company_id: parseInt(document.getElementById('company_id').value)
+      };
+
+      // Basit validasyon (opsiyonel ama önerilir)
+      if (!data.b_plaka || isNaN(data.seat_capacity) || isNaN(data.company_id)) {
+        alert("Tüm alanları doğru doldurduğundan emin ol!");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/Bus/addBus", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error("Otobüs eklenemedi: " + err);
+        }
+
+        alert("Otobüs başarıyla eklendi!");
+        closeModal('otobus');
+        loadOtobusList();
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+
+    // Otobüs form submit işlemi
+    document.getElementById('otobusForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await addNewOtobus();
+    });
+
+    // Firma listesini yükleme fonksiyonu
+    async function loadFirmaList() {
+      try {
+        const response = await fetch("http://localhost:5000/api/Company/getAllFirma");
+        if (!response.ok) throw new Error("Firmalar getirilemedi");
+
+        const data = await response.json();
+        const tbody = document.getElementById("firmaListesi");
+        tbody.innerHTML = "";
+
+        data.forEach(firma => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${firma.company_id}</td>
+            <td>${firma.c_name}</td>
+            <td>${firma.c_telno}</td>
+            <td>
+              <button onclick="editFirma(${firma.company_id})" class="action-btn edit-btn">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteFirma(${firma.company_id})" class="action-btn delete-btn">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        alert("Firma listesi yüklenemedi: " + error.message);
+      }
+    }
+
+    // Firma silme fonksiyonu
+    async function deleteFirma(companyId) {
+      if (!confirm('Bu firmayı silmek istediğinizden emin misiniz?')) return;
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/Company/deleteFirmaById/${companyId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error("Firma silinemedi");
+
+        alert("Firma başarıyla silindi!");
+        loadFirmaList();
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Firma düzenleme fonksiyonu
+    async function editFirma(companyId) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/Company/getById/${companyId}`);
+        if (!response.ok) throw new Error("Firma bilgileri getirilemedi");
+
+        const firma = await response.json();
+
+        document.getElementById('c_name').value = firma.c_name;
+        document.getElementById('c_telno').value = firma.c_telno;
+
+        const form = document.getElementById('firmaForm');
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          await updateFirma(companyId);
+        };
+
+        openModal('firma');
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Firma güncelleme fonksiyonu
+    async function updateFirma(companyId) {
+      const data = {
+        c_name: document.getElementById('c_name').value,
+        c_telno: document.getElementById('c_telno').value
+      };
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/Company/updateFirmabyId/${companyId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error("Firma güncellenemedi");
+
+        alert("Firma başarıyla güncellendi!");
+        closeModal('firma');
+        loadFirmaList();
+
+        const form = document.getElementById('firmaForm');
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          await addNewFirma();
+        };
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Yeni firma ekleme fonksiyonu
+    async function addNewFirma() {
+      const data = {
+        c_name: document.getElementById('c_name').value,
+        c_telno: document.getElementById('c_telno').value
+      };
+
+      try {
+        const response = await fetch("http://localhost:5000/api/Company/postFirma", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error("Firma eklenemedi");
+
+        alert("Firma başarıyla eklendi!");
+        closeModal('firma');
+        loadFirmaList();
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Firma form submit işlemi
+    document.getElementById('firmaForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await addNewFirma();
+    });
+
+    // Otobüs listesini yükleme fonksiyonu
+    async function loadOtobusList() {
+      try {
+        const response = await fetch("http://localhost:5000/api/Bus/getAllBus");
+        if (!response.ok) throw new Error("Otobüsler getirilemedi");
+
+        const otobusler = await response.json();
+        const tbody = document.getElementById("otobusListesi");
+        tbody.innerHTML = "";
+
+        otobusler.forEach(otobus => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${otobus.b_plaka}</td>
+            <td>${otobus.model}</td>
+            <td>${otobus.seat_capacity}</td>
+            <td>${otobus.company_id}</td>
+            <td>
+              <button class="action-btn edit-btn" onclick="editOtobus('${otobus.b_plaka}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn delete-btn" onclick="deleteOtobus('${otobus.b_plaka}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        alert("Otobüs listesi yüklenemedi: " + error.message);
+      }
+    }
+
+    // Otobüs silme fonksiyonu
+    async function deleteOtobus(plaka) {
+      if (!confirm('Bu otobüsü silmek istediğinizden emin misiniz?')) return;
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/Bus/deleteByPlaka?plaka=${encodeURIComponent(plaka)}`, {
+          method: 'DELETE',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+          }
+        });
+
+
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error("Otobüs silinemedi: " + err);
+        }
+
+        alert("Otobüs başarıyla silindi!");
+        loadOtobusList(); // Listeyi yenile
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Otobüs düzenleme fonksiyonu
+    async function editOtobus(plaka) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/Bus/getByPlaka?plaka=${encodeURIComponent(plaka)}`, {
+          headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+          }
+        });
+        
+        if (!response.ok) throw new Error("Otobüs bilgileri getirilemedi");
+
+        const otobus = await response.json();
+
+        // Form alanlarını doldur
+        document.getElementById('plaka').value = otobus.b_plaka;
+        document.getElementById('model').value = otobus.model;
+        document.getElementById('koltukSayisi').value = otobus.seat_capacity;
+        document.getElementById('company_id').value = otobus.company_id;
+
+        // Form submit işlemini güncelle
+        const form = document.getElementById('otobusForm');
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          await updateOtobus(plaka);
+        };
+
+        // Modal'ı aç
+        openModal('otobus');
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+
+    // Otobüs güncelleme fonksiyonu
+    async function updateOtobus(plaka) {
+      const data = {
+        b_plaka: document.getElementById('plaka').value.trim(),
+        model: document.getElementById('model').value.trim(),
+        seat_capacity: parseInt(document.getElementById('koltukSayisi').value),
+        company_id: parseInt(document.getElementById('company_id').value)
+      };
+
+      // Basit validasyon
+      if (!data.b_plaka || isNaN(data.seat_capacity) || isNaN(data.company_id)) {
+        alert("Tüm alanları doğru doldurduğundan emin ol!");
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/Bus/updateByPlaka?plaka=${encodeURIComponent(plaka)}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error("Otobüs güncellenemedi: " + err);
+        }
+
+        alert("Otobüs başarıyla güncellendi!");
+        closeModal('otobus');
+        loadOtobusList();
+
+        // Form submit işlemini normal haline döndür
+        const form = document.getElementById('otobusForm');
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          await addNewOtobus();
+        };
+      } catch (error) {
+        alert("Hata: " + error.message);
+      }
+    }
+  </script>
+</body>
+
+</html>
