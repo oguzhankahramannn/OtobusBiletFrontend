@@ -535,6 +535,7 @@
           navLinks.forEach(l => l.classList.remove('active'));
           link.classList.add('active');
 
+
           // İlgili bölümü göster
           sections.forEach(section => {
             section.style.display = section.id === targetId ? 'block' : 'none';
@@ -655,40 +656,37 @@
     }
 
     // Sefer güncelleme fonksiyonu
-    async function updateSefer(tripId) {
-      const data = {
-        startpoint: document.getElementById('startpoint').value,
-        end_point: document.getElementById('endpoint').value,
-        start_time: document.getElementById('starttime').value,
-        end_time: document.getElementById('endtime').value,
-        price: parseFloat(document.getElementById('price').value),
-        b_plaka: document.getElementById('busplate').value,
-        p_id: parseInt(document.getElementById('personelid').value)
-      };
-
+    // Düzenleme butonuna tıklandığında tetiklenecek fonksiyon
+    async function editSefer(tripId) {
       try {
-        const response = await fetch(`http://localhost:5000/Trip/putTripById/${tripId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
+        // 1) Mevcut seferi getir
+        const resp = await fetch(`http://localhost:5000/Trip/getTripById/${tripId}`);
+        if (!resp.ok) throw new Error("Sefer bulunamadı");
+        const sefer = await resp.json();
 
-        if (!response.ok) throw new Error("Sefer güncellenemedi");
+        // 2) Modal içindeki input'ları doldur
+        document.getElementById('startpoint').value = sefer.startpoint;
+        document.getElementById('endpoint').value = sefer.end_point;
+        document.getElementById('starttime').value = sefer.start_time.slice(0, 16); // "YYYY-MM-DDTHH:mm"
+        document.getElementById('endtime').value = sefer.end_time.slice(0, 16);
+        document.getElementById('price').value = sefer.price;
+        document.getElementById('busplate').value = sefer.b_plaka;
+        document.getElementById('personelid').value = sefer.p_id;
 
-        alert("Sefer başarıyla güncellendi!");
-        closeModal('sefer');
-        loadSeferList(); // Listeyi yenile
-
-        // Form submit işlemini normal haline döndür
+        // 3) Formun submit handler'ını güncelle: artık add değil update çalışsın
         const form = document.getElementById('seferForm');
         form.onsubmit = async (e) => {
           e.preventDefault();
-          await addNewSefer();
+          await updateSefer(tripId);
         };
-      } catch (error) {
-        alert("Hata: " + error.message);
+
+        // 4) Modal'ı aç (Bootstrap modal örneği)
+        const modalEl = document.getElementById('seferModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+      } catch (err) {
+        alert("Sefer düzenleme hatası: " + err.message);
       }
     }
 
@@ -868,34 +866,32 @@
     }
 
     // Firma güncelleme fonksiyonu
-    async function updateFirma(companyId) {
-      const data = {
-        c_name: document.getElementById('c_name').value,
-        c_telno: document.getElementById('c_telno').value
-      };
-
+    // 1) Düzenleme butonuna tıklandığında çağrılacak
+    async function editFirma(companyId) {
       try {
-        const response = await fetch(`http://localhost:5000/api/Company/updateFirmabyId/${companyId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
+        // Mevcut firmayı getir
+        const resp = await fetch(`http://localhost:5000/api/Company/getById/${companyId}`);
+        if (!resp.ok) throw new Error("Firma bulunamadı");
+        const firma = await resp.json();
 
-        if (!response.ok) throw new Error("Firma güncellenemedi");
+        // Modal içindeki input'ları doldur
+        document.getElementById('c_name').value = firma.c_name;
+        document.getElementById('c_telno').value = firma.c_telno;
 
-        alert("Firma başarıyla güncellendi!");
-        closeModal('firma');
-        loadFirmaList();
-
+        // Formun submit handler'ını güncelle: updateFirma çalışsın
         const form = document.getElementById('firmaForm');
         form.onsubmit = async (e) => {
           e.preventDefault();
-          await addNewFirma();
+          await updateFirma(companyId);
         };
-      } catch (error) {
-        alert("Hata: " + error.message);
+
+        // Modal'ı aç (Bootstrap örneği)
+        const modalEl = document.getElementById('firmaModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+      } catch (err) {
+        alert("Firma düzenleme hatası: " + err.message);
       }
     }
 
@@ -998,7 +994,7 @@
             "Authorization": "Bearer " + localStorage.getItem("token")
           }
         });
-        
+
         if (!response.ok) throw new Error("Otobüs bilgileri getirilemedi");
 
         const otobus = await response.json();
